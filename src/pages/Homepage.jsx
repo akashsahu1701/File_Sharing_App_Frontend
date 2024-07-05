@@ -4,7 +4,6 @@ import { Box, Button, Container, Grid, Typography } from "@mui/material";
 import Header from "../components/Header";
 import FileCard from "../components/FileCards";
 import { getMyFiles } from "../api/files";
-import { setAuthorizationHeader } from "../api";
 import UploadFileModal from "../components/UploadFiles";
 
 const Homepage = () => {
@@ -22,12 +21,9 @@ const Homepage = () => {
   useEffect(() => {
     document.title = "Home";
     const isAuthenticated = localStorage.getItem("isAuthenticated");
-    const token = localStorage.getItem("token");
-    setAuthorizationHeader(token);
     if (!isAuthenticated) {
       window.location.href = "/login";
     }
-
     getMyFiles().then((res) => {
       setFiles(res.data);
     });

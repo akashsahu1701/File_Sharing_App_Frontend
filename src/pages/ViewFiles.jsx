@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -13,6 +13,8 @@ import {
 import { baseUrl } from "../api";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import { deleteFile, getUsersListWithAccess } from "../api/files";
+import FileAccessTable from "../components/AccessTable";
 
 const modalStyle = {
   position: "absolute",
@@ -29,7 +31,10 @@ const modalStyle = {
 const FileViewPage = () => {
   const location = useLocation();
   const file = location.state?.file;
+  const userId = localStorage.getItem("user_id");
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -56,6 +61,22 @@ const FileViewPage = () => {
 
   const handleFileChange = (e) => {
     setSelectedFiles(Array.from(e.target.files));
+  };
+
+  const deleteFiles = async () => {
+    try {
+      deleteFile(file.id)
+        .then((res) => {
+          if (res.code === 200) {
+            window.location.reload();
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error("Error deleting file:", error);
+    }
   };
 
   const handleMerge = async () => {
@@ -95,6 +116,20 @@ const FileViewPage = () => {
     }
   };
 
+  useEffect(() => {
+    document.title = `${file.name}`;
+    getUsersListWithAccess(file.id)
+      .then((res) => {
+        setUsers(res.data);
+        setCurrentUser(
+          res.data.find((user) => parseInt(user.id) === parseInt(userId))
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [file, userId]);
+
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
@@ -110,41 +145,59 @@ const FileViewPage = () => {
             alt="back"
           />
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => handleOpenModal(null)}
-        >
-          Merge Videos
-        </Button>
+        {currentUser?.can_edit && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleOpenModal(null)}
+          >
+            Merge Videos
+          </Button>
+        )}
       </Box>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6} md={4} key={file.id}>
+        <Grid item xs={12} sm={12} md={12} key={file.id}>
           <Card>
-            <CardContent>
+            <CardContent
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
               <Typography variant="h5" component="div">
                 {file.name}
               </Typography>
-              <video width="100%" controls>
+              <video
+                style={{ alignSelf: "center" }}
+                width="60%"
+                height="60%"
+                controls
+              >
                 <source src={`${baseUrl}/files/${file.id}`} type={file.type} />
                 Your browser does not support the video tag.
               </video>
             </CardContent>
-            <CardActions>
-              <Button
-                size="small"
-                onClick={() => handleOpenModal(file, "trim")}
-              >
-                Trim
-              </Button>
-              <Button size="small" onClick={() => {}}>
-                Delete
-              </Button>
-            </CardActions>
+            {currentUser?.can_edit && (
+              <CardActions>
+                <Button
+                  size="small"
+                  onClick={() => handleOpenModal(file, "trim")}
+                >
+                  Trim
+                </Button>
+                <Button size="small" onClick={() => deleteFiles()}>
+                  Delete
+                </Button>
+              </CardActions>
+            )}
           </Card>
         </Grid>
       </Grid>
-
+      {currentUser?.can_edit && (
+        <FileAccessTable users={users} setUsers={setUsers} fileId={file.id} />
+      )}
       <Modal
         open={modalOpen}
         onClose={handleCloseModal}

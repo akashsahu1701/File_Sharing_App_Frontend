@@ -1,18 +1,14 @@
 import React from "react";
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Typography,
-} from "@mui/material";
+import { Card, CardContent, CardMedia, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const FileCard = ({ file }) => {
   const navigation = useNavigate();
   return (
-    <Card sx={{ maxWidth: 345, m: 2 }}>
+    <Card
+      onClick={() => navigation(`/view-files`, { state: { file } })}
+      sx={{ maxWidth: 345, m: 2 }}
+    >
       <CardMedia
         component="img"
         height="220"
@@ -38,16 +34,6 @@ const FileCard = ({ file }) => {
           {file.file_type} - {(file.size / 1024 / 1024).toFixed(2)} MB
         </Typography>
       </CardContent>
-      <CardActions>
-        <Button
-          onClick={() => navigation(`/view-files`, { state: { file } })}
-          size="small"
-        >
-          View
-        </Button>
-        <Button size="small">Delete</Button>
-        <Button size="small">Download</Button>
-      </CardActions>
     </Card>
   );
 };
