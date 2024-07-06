@@ -12,6 +12,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import Header from "../components/Header";
 import { createUser } from "../api/users";
@@ -26,9 +28,18 @@ const CreateUser = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [selectedRoles, setSelectedRoles] = useState("");
+  const [error, setError] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const handleCreateUser = (e) => {
     e.preventDefault();
+
+    if (!username || !email || !password || !selectedRoles) {
+      setError("Please fill all the fields");
+      return;
+    }
 
     const data = {
       email: email,
@@ -39,11 +50,26 @@ const CreateUser = () => {
     };
     createUser(data)
       .then((res) => {
-        console.log("User Created:", res);
+        setEmail("");
+        setPassword("");
+        setUsername("");
+        setSelectedRoles("");
+        setError("");
+        setSnackbarMessage("User created successfully!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
       })
       .catch((err) => {
+        setError(err?.data?.error);
+        setSnackbarMessage("User creation failed: " + err?.data?.error);
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
         console.log("User Creation Failed:", err);
       });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -61,19 +87,27 @@ const CreateUser = () => {
                   <TextField
                     label="Username"
                     variant="outlined"
+                    required
                     fullWidth
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(e) => {
+                      setUsername(e.target.value);
+                      setError("");
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
                     label="Email"
                     variant="outlined"
+                    required
                     fullWidth
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setError("");
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -81,9 +115,13 @@ const CreateUser = () => {
                     label="Password"
                     variant="outlined"
                     fullWidth
+                    required
                     type="password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setError("");
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -92,7 +130,11 @@ const CreateUser = () => {
                     <Select
                       labelId="role-label"
                       value={selectedRoles}
-                      onChange={(e) => setSelectedRoles(e.target.value)}
+                      required
+                      onChange={(e) => {
+                        setSelectedRoles(e.target.value);
+                        setError("");
+                      }}
                       label="Role"
                     >
                       {roles.map((role) => (
@@ -105,6 +147,9 @@ const CreateUser = () => {
                 </Grid>
               </Grid>
             </form>
+
+            {error && <Typography color="error">{error}</Typography>}
+            {}
           </CardContent>
           <CardActions>
             <Button
@@ -118,6 +163,19 @@ const CreateUser = () => {
           </CardActions>
         </Card>
       </Container>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

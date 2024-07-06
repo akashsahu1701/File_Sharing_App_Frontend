@@ -6,7 +6,7 @@ export const getUsers = async () => {
 };
 
 export const login = async (username, password) => {
-  return new Promise(async (resolve) => {
+  return new Promise(async (resolve, reject) => {
     try {
       const res = await apiHandler.post("/auth/login", { username, password });
       localStorage.setItem("isAuthenticated", true);
@@ -16,8 +16,7 @@ export const login = async (username, password) => {
       setAuthorizationHeader(res.data.data.token);
       return resolve(res.data);
     } catch (error) {
-      console.log(error);
-      resolve({ code: 500 });
+      reject(error.response);
     }
   });
 };
@@ -56,7 +55,7 @@ export const createUser = async (data) => {
       return resolve(res.data);
     } catch (error) {
       console.log(error);
-      reject(error);
+      reject(error?.response);
     }
   });
 };

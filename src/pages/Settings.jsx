@@ -245,12 +245,22 @@ const SettingsPage = () => {
               sx={{ mb: 2, width: "100%" }}
               renderValue={(selected) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                  {selected.map((value) => (
-                    <Chip
-                      key={value}
-                      label={users.find((user) => user.id === value).username}
-                    />
-                  ))}
+                  {selected.map((value) => {
+                    if (selectedUser?.id === value) {
+                      return <></>;
+                    } else {
+                      return (
+                        <>
+                          <Chip
+                            key={value}
+                            label={
+                              users.find((user) => user.id === value).username
+                            }
+                          />
+                        </>
+                      );
+                    }
+                  })}
                 </Box>
               )}
             >

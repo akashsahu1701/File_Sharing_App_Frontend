@@ -5,14 +5,21 @@ import { login } from "../api/users";
 const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const res = await login(username, password);
-    if (res.code === 200) {
-      window.location.href = "/";
-    }
+    login(username, password)
+      .then((res) => {
+        if (res.code === 200) {
+          window.location.href = "/";
+        }
+      })
+      .catch((err) => {
+        console.log("------", err);
+        setError(err?.data?.msg);
+      });
   };
 
   return (
@@ -43,7 +50,10 @@ const LoginForm = () => {
             autoComplete="username"
             autoFocus
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => {
+              setError("");
+              setUsername(e.target.value);
+            }}
           />
           <TextField
             margin="normal"
@@ -55,8 +65,12 @@ const LoginForm = () => {
             id="password"
             autoComplete="current-password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setError("");
+              setPassword(e.target.value);
+            }}
           />
+          {error && <Typography color="error">{error}</Typography>}
           <Button
             type="submit"
             fullWidth
