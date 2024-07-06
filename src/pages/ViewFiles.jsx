@@ -7,61 +7,58 @@ import {
   Card,
   CardContent,
   CardActions,
-  Modal,
-  TextField,
 } from "@mui/material";
 import { baseUrl } from "../api";
 import { useLocation } from "react-router-dom";
-import axios from "axios";
 import { deleteFile, getUsersListWithAccess } from "../api/files";
 import FileAccessTable from "../components/AccessTable";
 
-const modalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
+// const modalStyle = {
+//   position: "absolute",
+//   top: "50%",
+//   left: "50%",
+//   transform: "translate(-50%, -50%)",
+//   width: 400,
+//   bgcolor: "background.paper",
+//   border: "2px solid #000",
+//   boxShadow: 24,
+//   p: 4,
+// };
 
 const FileViewPage = () => {
   const location = useLocation();
   const file = location.state?.file;
   const userId = localStorage.getItem("user_id");
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  // const [selectedFiles, setSelectedFiles] = useState([]);
   const [users, setUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [trimMode, setTrimMode] = useState(false);
+  // const [modalOpen, setModalOpen] = useState(false);
+  // const [startTime, setStartTime] = useState("");
+  // const [endTime, setEndTime] = useState("");
+  // const [trimMode, setTrimMode] = useState(false);
 
-  const handleOpenModal = (file, mode = "merge") => {
-    if (mode === "trim") {
-      setTrimMode(true);
-      setSelectedFiles([file]);
-    } else {
-      setTrimMode(false);
-      setSelectedFiles([]);
-    }
-    setModalOpen(true);
-  };
+  // const handleOpenModal = (file, mode = "merge") => {
+  //   if (mode === "trim") {
+  //     setTrimMode(true);
+  //     setSelectedFiles([file]);
+  //   } else {
+  //     setTrimMode(false);
+  //     setSelectedFiles([]);
+  //   }
+  //   setModalOpen(true);
+  // };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    setSelectedFiles([]);
-    setStartTime("");
-    setEndTime("");
-    setTrimMode(false);
-  };
+  // const handleCloseModal = () => {
+  //   setModalOpen(false);
+  //   setSelectedFiles([]);
+  //   setStartTime("");
+  //   setEndTime("");
+  //   setTrimMode(false);
+  // };
 
-  const handleFileChange = (e) => {
-    setSelectedFiles(Array.from(e.target.files));
-  };
+  // const handleFileChange = (e) => {
+  //   setSelectedFiles(Array.from(e.target.files));
+  // };
 
   const deleteFiles = async () => {
     try {
@@ -79,42 +76,42 @@ const FileViewPage = () => {
     }
   };
 
-  const handleMerge = async () => {
-    const formData = new FormData();
-    selectedFiles.forEach((file, index) => {
-      formData.append(`file${index}`, file);
-    });
+  // const handleMerge = async () => {
+  //   const formData = new FormData();
+  //   selectedFiles.forEach((file, index) => {
+  //     formData.append(`file${index}`, file);
+  //   });
 
-    try {
-      const response = await axios.post(`${baseUrl}/merge`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log("Files merged successfully:", response.data);
-      handleCloseModal();
-    } catch (error) {
-      console.error("Error merging files:", error);
-    }
-  };
+  //   try {
+  //     const response = await axios.post(`${baseUrl}/merge`, formData, {
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //     });
+  //     console.log("Files merged successfully:", response.data);
+  //     handleCloseModal();
+  //   } catch (error) {
+  //     console.error("Error merging files:", error);
+  //   }
+  // };
 
-  const handleTrim = async () => {
-    if (!startTime || !endTime) {
-      alert("Please set both start and end times for trimming.");
-      return;
-    }
-    try {
-      const response = await axios.post(`${baseUrl}/trim`, {
-        fileId: selectedFiles[0].id,
-        startTime,
-        endTime,
-      });
-      console.log("File trimmed successfully:", response.data);
-      handleCloseModal();
-    } catch (error) {
-      console.error("Error trimming file:", error);
-    }
-  };
+  // const handleTrim = async () => {
+  //   if (!startTime || !endTime) {
+  //     alert("Please set both start and end times for trimming.");
+  //     return;
+  //   }
+  //   try {
+  //     const response = await axios.post(`${baseUrl}/trim`, {
+  //       fileId: selectedFiles[0].id,
+  //       startTime,
+  //       endTime,
+  //     });
+  //     console.log("File trimmed successfully:", response.data);
+  //     handleCloseModal();
+  //   } catch (error) {
+  //     console.error("Error trimming file:", error);
+  //   }
+  // };
 
   useEffect(() => {
     document.title = `${file.name}`;
@@ -145,7 +142,7 @@ const FileViewPage = () => {
             alt="back"
           />
         </Typography>
-        {currentUser?.can_edit && (
+        {/* {currentUser?.can_edit && (
           <Button
             variant="contained"
             color="primary"
@@ -153,7 +150,7 @@ const FileViewPage = () => {
           >
             Merge Videos
           </Button>
-        )}
+        )} */}
       </Box>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} key={file.id}>
@@ -181,12 +178,12 @@ const FileViewPage = () => {
             </CardContent>
             {currentUser?.can_edit && (
               <CardActions>
-                <Button
+                {/* <Button
                   size="small"
                   onClick={() => handleOpenModal(file, "trim")}
                 >
                   Trim
-                </Button>
+                </Button> */}
                 <Button size="small" onClick={() => deleteFiles()}>
                   Delete
                 </Button>
@@ -198,7 +195,7 @@ const FileViewPage = () => {
       {currentUser?.can_edit && (
         <FileAccessTable users={users} setUsers={setUsers} fileId={file.id} />
       )}
-      <Modal
+      {/* <Modal
         open={modalOpen}
         onClose={handleCloseModal}
         aria-labelledby="trim-video-modal-title"
@@ -251,7 +248,7 @@ const FileViewPage = () => {
             </>
           )}
         </Box>
-      </Modal>
+      </Modal> */}
     </Box>
   );
 };
