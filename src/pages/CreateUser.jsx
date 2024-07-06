@@ -24,6 +24,7 @@ const roles = [
   { id: 3, role: "User" },
 ];
 const CreateUser = () => {
+  const role = localStorage.getItem("role");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -137,11 +138,15 @@ const CreateUser = () => {
                       }}
                       label="Role"
                     >
-                      {roles.map((role) => (
-                        <MenuItem key={role.id} value={role.id}>
-                          {role.role}
-                        </MenuItem>
-                      ))}
+                      {role === "super-admin" ? (
+                        roles.map((role) => (
+                          <MenuItem key={role.id} value={role.id}>
+                            {role.role}
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <MenuItem value={3}>User</MenuItem>
+                      )}
                     </Select>
                   </FormControl>
                 </Grid>
