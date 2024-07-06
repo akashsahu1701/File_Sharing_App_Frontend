@@ -1,6 +1,5 @@
 import axios from "axios";
-
-export const baseUrl = "http://localhost:8082/api";
+export const baseUrl = "http://13.233.125.8:8082/api";
 
 export const apiHandler = axios.create({
   baseURL: baseUrl,
